@@ -10,25 +10,33 @@ spring:
 
 
   cloud:
-    gateway:
+    consul:
+      host: localhost
+      port: 8500
       discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+        register: true
+    
+    gateway:
       routes:
-        - id: auth-service
-          uri: lb://auth-service-cashpilot
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
+        - id: user-service-route
 
-        - id: transaction-service
-          uri: lb://transaction-service
+          # Это самое главное:
+          # Вместо "http://localhost:9094" мы пишем "lb://USER-SERVICE-CASHPILOT"
+          # "lb" означает Load Balancer (балансировщик нагрузки)
+          # "USER-SERVICE-CASHPILOT" - это `spring.application.name` вашего микросервиса
+          uri: lb://USER-SERVICE-CASHPILOT
+
+          # Условие, при котором сработает этот роут.
+          # Все запросы, начинающиеся с /users/, будут перенаправлены
           predicates:
-            - Path=/transactions/**
-          filters:
-            - StripPrefix=1
+            - Path=/users/**
+
+          # (Опционально) Фильтр для удаления префикса /users
+          # /users/1 -> /1
+          # filters:
+          #   - StripPrefix=1
+
+
 
 eureka:
   client:
