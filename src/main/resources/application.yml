@@ -15,33 +15,15 @@ spring:
       port: 8500
       discovery:
         register: true
+
     
     gateway:
       routes:
-        - id: user-service-route
-
-          # Это самое главное:
-          # Вместо "http://localhost:9094" мы пишем "lb://USER-SERVICE-CASHPILOT"
-          # "lb" означает Load Balancer (балансировщик нагрузки)
-          # "USER-SERVICE-CASHPILOT" - это `spring.application.name` вашего микросервиса
-          uri: lb://USER-SERVICE-CASHPILOT
-
-          # Условие, при котором сработает этот роут.
-          # Все запросы, начинающиеся с /users/, будут перенаправлены
+        - id: envoy_proxy_route
+          uri: http://localhost:10000
           predicates:
-            - Path=/users/**
+            - Path=/**
 
-          # (Опционально) Фильтр для удаления префикса /users
-          # /users/1 -> /1
-          # filters:
-          #   - StripPrefix=1
-
-
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
 
 server:
   port: 9092
