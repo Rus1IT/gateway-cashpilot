@@ -29,3 +29,8 @@ server:
   port: 9092
 
 
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.security: DEBUG

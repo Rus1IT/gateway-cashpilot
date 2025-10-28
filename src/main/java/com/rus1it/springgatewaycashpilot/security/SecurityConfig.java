@@ -20,11 +20,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .csrf(csrf -> csrf.disable())
-
-                // 2. ДОБАВЬТЕ ЭТУ СТРОКУ
-                // Она "подключает" бин с настройками CORS (который мы создадим ниже)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**", "/actuator/health", "/actuator/info").permitAll()
                         .anyExchange().authenticated()
@@ -34,27 +30,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 3. ДОБАВЬТЕ ЭТОТ БИН
-    // Это и есть та самая конфигурация CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ❗ Разрешаем вашему Live Server (порт 8081)
         config.setAllowedOrigins(Arrays.asList("http://127.0.0.1:8081"));
 
-        // Разрешаем все методы
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // Разрешаем все заголовки
         config.setAllowedHeaders(Arrays.asList("*"));
 
-        // Разрешаем отправку credentials (включая токены)
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        // Применяем эту конфигурацию ко всем путям "/**"
         source.registerCorsConfiguration("/**", config);
 
         return source;
